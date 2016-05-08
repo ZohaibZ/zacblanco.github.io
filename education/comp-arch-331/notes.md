@@ -874,13 +874,15 @@ Also considering performance we should still count the instructions executed, no
 
 The first thing that we need to understand is two's complement.
 
-It is a way of representing positive and negative binary numbers.
+It is a way of representing positive and negative binary numbers. When we don't think in two's complement we typically just think of a number as being the sum of the powers of two in each location where a `1` exists. However, with two's complement that representation changes.
+
+Take the following example of how to represent the number "-5" in binary with two's complement
 
 Example: Imagine we have four bits `0000`. Say we want to represent the value
 `-5` using the two's complement.
 
 1. Represent `-5` in binary.
-  - $$2^0 + 2^2 = 0101$$
+  - $$2^0 + 2^2 = 1 + 4 = 0101$$
 2. Note `0101`, now invert every bit to its opposite value
   - `0101` inverted `1010`.
 3. Add 1 to the inverted value
@@ -892,6 +894,24 @@ And what about going backwards (negative to positive)?
 
 Simply subtract 1 from the value, then invert the bits. The exact opposite process from before.
 
+So, to summarize:
+
+**To represent a negative number, $$-n$$ in two's complement**:
+
+1. First represent the number, $$n$$, in 'normal' binary.
+2. Invert all of the 1's and 0's (turn each 0 to a 1, and each one to a 0).
+3. Finally, add 1 to the inverted number.
+
+The resulting binary number is now equal to $$-n$$
+
+**To find the value of a two's complement number**
+
+1. Subtract 1 from the binary number
+2. Flip all of the ones and zeros
+
+The resulting binary number is the number $$n$$ which was represented as $$-n$$ in two's complement.
+
+
 ### Two's Complement Operations
 
 MIPS 16-bit arithmetic gets converted to 32 bit for arithmetic
@@ -900,19 +920,173 @@ MIPS 16-bit arithmetic gets converted to 32 bit for arithmetic
 
 - Sign extend vs Zero Extend (`lb` vs `lbu`)
 
+In **sign extension** we simply take the rightmost bit of the binary number we're extending and continuously add that bit (1 or 0) to the left side of the number for however many bits are required.
 
-### Dealing with Overflow
+in **zero extension** we simply add the required number of 0 bits to the left hand side of the number.
+
+### Multiplication with Two's Complement - Booth's Algorithm
+
+Given any two numbers which are represented in binary with two's complement we can multiply them together using [Booth's algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Booth%27s_multiplication_algorithm).
+
+The process for multiplying the two numbers are as follows:
+
+Given two numbers to multiply together, say $$m$$ and $$n$$:
+
+The number of bits in $$m$$ is $$x$$, the number of bits in $$n$$ is $$y$$. 
+
+The next three terms all have a number of bits equal to $$x + y + 1$$
+
+We can first define a binary number **A**. Fill the leftmost bits of **A** with the bits from the number $$m$$. The remaining $$y+1$$ bits should be filled with zeroes.
+
+Next, we should define the binary number **S** which is of size $$x + y + 1$$. You should fill in leftmost, $$x$$ number of bits with the value of $$-m$$. In other words: invert the value of $$m$$ and then put that binary representation into the leftmost bits of $$S$$. The rest should be zeroes
+
+Last, we should define the number **P*. **P** is of size $$x + y + 1$$ as well. However, we want to fill the most significant (leftmost) $$x$$ bits with zeroes. That is The leftmost bits of **P** should all be zero. The next $$y$$ bits should be the value of $$n$$. The rightmost bit should be a zero.
+
+Example:
+
+- $$m = 5 = 0101$$
+- $$n = 6 = 0110$$
+- $$-m = -5 = 1011$$
+
+- $$A = 0101\ 0000\ 0$$
+- $$S = 1011\ 0000\ 0$$
+- $$P = 0000\ 0110\ 0$$
+
+Now that we've defined **A**, **S**, and **P** we can move to the actual algorithm of defining the product of the two numbers. The algorithm is as follows:
+
+1. Observe the two **rightmost** bits of **P**. Do the following:
+  - If they are $$01$$, set $$P = P + A$$
+  - If they are $$10$$, set $$P = P + S$$
+  - If they are $$00$$, do nothing.
+  - If they are $$11$$, do nothing.
+2. Do a right bitshift operation on the value of **P**.
+  - Make sure that you sign extend when doing this bitshift.
+3. Repeat steps 1 and 2 until they have been done $$y$$ number of times. ($$y$$ is the number if bits it takes to represent $$n$$)
+4. The value of the product is the leftmost $$x + y$$ bits
+
+### Efficient Integer Division with Two's Complement Numbers
+
+First take two numbers, $$m$$ and $$n$$. We want to divide $$m$$ by the number $$n$$.
+
+Next, we need to set up the the quotient/remainder register. Take $$x$$ to be the number of bits in $$m$$. Zero extend $$m$$ so that it is of size $$2x$$ bits. This is now the quotient/remainder register.
+
+Remember the divisor is $$n$$.
+
+Now for the algorithm:
+
+1. Observe the value in the quotient/remainder register. Shift left by 1 bit. (Zero extend from the right hand side).
+2. Subtract the divisor $$n$$ from the left half (leftmost $$x$$ bits) of the quotient/remainder register. Remember subtracting is simply adding the negation of the number.
+3. Observe the leftmost bit of the quotient/remainder register.
+  - If the leftmost bit is 0, shift the quotient/remainder register left 1 bit, setting the new rightmost bit to 1.
+  - If the leftmost bit is 1, add the divisor back to the left half of the quotient/remainder register. The value in the left half should now be the same as before step 2. Finally shift the quotient/remainder register left, setting the new rightmost bit equal to 0.
+4. Repeat steps 2 and 3, up to $$x$$ number of times
+5. Shift the left half of quotient/remainder register right 1 bit.
+
+The division remainder now resides in the leftmost $$x$$ bits of the quotient/remainder register. The quotient now resides in the rightmost $$x$$ bits of the quotient/remainder register.
+
+### Floating Point Representation of Numbers
+
+So we know how to represent positive and negative integers using binary, but what about decimal numbers?
+
+There's no real 'intuitive' way to represent a decimal number using only binary digits, so [IEEE](http://www.ieee.org) made a standard format called **IEEE-754** which specifies how to represent postive and negative decimal numbers using 32 binary digits.
+
+The way we represent a floating point number is with the following formula:
+
+> $$ (-1)^{\text{Sign}} \cdot (1 + \text{Fraction}) \cdot 2^{\text{Exponent} - 127} $$
+
+The question is: What do **Sign**, **Fraction**, and **Exponent** mean in this formula?
+
+Well, **IEEE-754** defines a way in which each bit of a 32 bit sequence defined a decimal (or floating point) number.
+
+An IEEE-754 number has the following format
+
+| Sign | Exponent | Fraction |
+|:----:|:--------:|:--------:|
+| 1 bit| 8 bits | 23 bits |
+
+As we can see if we add the bits for each space together we get $$1 + 8 + 23 = 32$$ bits to represent a floating point number.
+
+Okay, but how exactly do each of these sets of bits help to represent the **Sign**, **Fraction**, and **Exponent**?.
+
+------
+
+#### Sign Bit
+
+We can see from the above formula that we have $$(-1)^\text{Sign}$$. What this tells us is that if the **sign bit is 0**, then the number will **be positive** because $$(-1)^0 = 1$$.
+
+On the other hand if the **sign bit is 1** then we get $$(-1)^1 = -1$$ meaning that the number is going **to be negative**
+
+------
+
+#### Exponent
+
+The exponent is interesting. It allows us to represent very, very small numbers as well as large ones using only 8 binary digits.
+
+The exponent values of $$ 1111\ 1111$$ and $$ 0000\ 0000$$ are both reserved for special cases such as Zero, $$\infty$$, $$NaN$$, etc... They are not used to represent normal numbers.
+
+Because the exponent is made up of 8 bits that means we can express a maximum of $$2^8 = 256 $$ numbers (0 through 255). Judging from the formula this means that we can represent everywhere from $$2^{-126}$$ (because 0 is reserved, 1-127=-126) to $$ 2^{127} $$ (254 - 127=126, because 255 is reserved).
+
+------
+
+#### Fraction
+
+The fraction portion is quite possibly the trickiest of the three to understand. However if we break it down it won't seem as daunting.
+
+The fraction is represented by the rightmost 23 bits of the floating point number. Each place represents a (negative) power of two. Simply add the powers of two together wherever there is a "1" to calculate the fraction.
+
+Below is a table which outlines the values for the fraction 
+
+| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8| 9 | 10 | 11 | etc.. | 
+| $$2^{-1}$$ | $$2^{-2}$$ | $$2^{-3}$$ | $$2^{-4}$$ | $$2^{-5}$$ | $$2^{-6}$$ | $$2^{-7}$$ | $$2^{-8}$$ | $$2^{-9}$$ | $$2^{-10}$$ | $$2^{-11}$$ | etc... |
+
+Remember that the leftmost fraction bit represents the $$2^{-1}$$ place, where the rightmost represents the $$2^{-23} space$$
+
+So if we were given a 23 bit number to represent a fraction, say: 
+
+$$ 1100\ 0000\ 0000\ 0000\ 0000\ 000 $$
+
+Then the value of the fraction would be:
+
+$$ 1\cdot 2^{-1} + 1\cdot 2^{-2} + 0\cdot 2^{-3} + 0\cdot 2^{-4} + \dots = 0.75$$
+
+------
+
+So in quick summary, The formula to represent a floating point number with **IEEE-754** standard is $$ (-1)^{\text{Sign}} \cdot (1 + \text{Fraction}) \cdot 2^{\text{Exponent} - 127} $$
+
+The **fraction** is a sum of negative powers of two, while the **exponent** field helps represent a power of 2 between $$-126$$ and $$+127$$. The sign bit simply tells us whether or not 
+
+### Dealing with Arithmetic Overflow
 
 Some languages (e.g. C) ignore overflow errors.
 
 Some other languages (Ada, or Fortran) will raise an exception
 
+## MIPS Datapath
+
+![MIPS Datapath](/assets/images/comp-arch/mips-datapath.png)
 
 
+## Datapath and Control Line Signals
 
+![ALU Control lines](/assets/images/comp-arch/alu-control-lines.png)
 
+![ALU Instruction Codes](/assets/images/comp-arch/alu-instruction-codes.png)
 
+![ALU Op Codes](/assets/images/comp-arch/alu-op-codes.png)
 
+![Control Signal Descriptions](/assets/images/comp-arch/control-signal-descriptions.png)
+
+![Instruction Control Signals](/assets/images/comp-arch/instruction-control-signals.png)
+
+| ALUOp | Action needed by ALU |
+| 00 | Addition (for load and store) |
+| 01 | Subtraction (for beq) |
+| 10 | Determined by funct field (R-type instruction) |
+| 11 | Not used |
+
+## Pipelined MIPS Datapath
+
+![MIPS Datapath](/assets/images/comp-arch/pipelined-processor.png)
 
 
 

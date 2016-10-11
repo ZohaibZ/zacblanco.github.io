@@ -25,7 +25,7 @@ $$
 
 $$
 
-We can see here that rows are numbered from 1 to $$m$$. and that we have rows from 1 to $$n$$.
+We can see here that rows are numbered from 1 to $$m$$. and that we have columns from 1 to $$n$$.
 
 Normally we say that a matric will be $$m\times n$$ in size where **m denotes rows** and **n denotes colummns**.
 
@@ -40,7 +40,7 @@ There is a short notation for a matrix which looks like the following
 
 $$
 
-A = (aij)_{m\times n}
+A = (a_{ij})_{m\times n}
 
 $$
 
@@ -48,7 +48,7 @@ but what if we have the expression:
 
 $$
 
-A = (aij)_{m\times n} = B=(bij)_{m\times n}
+A = (a_{ij})_{m\times n} = B=(b_{ij})_{m\times n}
 
 $$
 
@@ -58,17 +58,17 @@ This means that the matrices are equal at values $$(i, j)$$ in each matrix
 
 **Addition**
 
-Given $$A=(aij)_{m\times n}$$ and that $$ B=(bij)_{m\times n}$$
+Given $$A=(a_{ij})_{m\times n}$$ and that $$ B=(b_{ij})_{m\times n}$$
 
 Then when adding two matrices, they must be the same size. As long as they are the same size. You simple add the elements which are in the same position of each matrix,to form the new value in that location in the resultant matrix
 
-So for addition in short notation$$ A + B = (aij + bij)_{m\times n} $$
+So for addition in short notation$$ A + B = (a_{ij} + b_{ij})_{m\times n} $$
 
 **Scalar Multiplication**
 
 In scalar multiplication of a matrix you simply just multiply a scalar quantity by every entry of a matrix. In short notation this would be:
 
-$$ r \cdot A = (r\cdot aij)_{m\times n} $$
+$$ r \cdot A = (r\cdot a_{ij})_{m\times n} $$
 
 Example:
 
@@ -144,7 +144,7 @@ But how do we solve a system of equations using these matrices and the knowledge
 
 The answer is to utilize the **Reduced Row Echelon Form** or (RREF) for short.
 
-Generally for a linear system we say that given a Matrix of coefficients A, a matrix of uknownes, $$x$$, and what the product of those two are equal to, $$b$$ we get the equation
+Generally for a linear system we say that given a Matrix of coefficients A, a matrix of uknowns, $$x$$, and what the product of those two are equal to, $$b$$ we get the equation
 
 > $$ A\cdot x = b $$
 
@@ -190,7 +190,7 @@ The basics of a system of linear equations:
 In a system there are three possible different outcomes:
 
 1. No Solution
-2. Infitite Solutions
+2. Infinite Solutions
 3. A Single Solution
 
 These outcomes depend on the system and what we are given.
@@ -252,9 +252,9 @@ From here we then solve our final equation giving us:
 
 $$x_1 = -\frac{3}{2} $$
 
-In order to obtain these RREF matrices we can perform what are called **ELementary Operations** on each matrix.
+In order to obtain these RREF matrices we can perform what are called **Elementary Operations** on each matrix.
 
-**Elemntary Operations on a Matrix**
+**Elementary Operations on a Matrix**
 
 1. Exchange the placement of two rows
 2. Multiply a whole row with a non-zero scalar value
@@ -279,7 +279,7 @@ This basically consists of using the elementary row operations (noted above) to 
 
 > Whenever an augmented matric contains a row in which the only nonzero entry lies in the last column, the corresponding system of linear equations has no solution.
 
-### Procuedure for solving a System of Linear Equations
+### Procedure for solving a System of Linear Equations
 
 1. Write the augmented matric $$[A\ b]$$ of the system
 2. Find the reduced row echelon form $$[R\ c] \text{ of }\ [A\ b]$$
@@ -314,7 +314,7 @@ The following statements are all equivalent
  
 1. The matrix equation $$Ax = b$$ is consistent
 2. The vector $$b$$ is a linear combination of the columns of A.
-3. The reduced row echelon form of the augmented matrix $$[A\ b]$$ has no rown of the form $$[0\ 0\ 0\ 0\ \dots\ d]$$ where $$d \neq 0$$
+3. The reduced row echelon form of the augmented matrix $$[A\ b]$$ has no row of the form $$[0\ 0\ 0\ 0\ \dots\ d]$$ where $$d \neq 0$$
 
 
 ## The Span of a Set of Vectors
@@ -333,7 +333,7 @@ The following statements are all equivalent:
 1. The span of the columns of A is $$R^m$$
 2. The equation $$Ax = b$$
 3. The rank of A is $$m$$, the number of rows of A
-4. Teh reduced row echelon form of A has no zero rows
+4. The reduced row echelon form of A has no zero rows
 5. There is a pivot position in each row of A
 
 
@@ -365,7 +365,7 @@ The following statements involving linear independence about a matrix are equiva
 
 ## Matrix Multiplication
 
-Mulitplication of two matrices is different than normal multiplication by a scalar.
+Multiplication of two matrices is different than normal multiplication by a scalar.
 
 **Definition** Let A be an $$m\times n$$ matrix and B be an $$n\times p$$ matrix. We dfine the **matrix product** of $$AB$$ to be the $$m\times p$$ matrix who's jth column is $$Ab_j$$. That is 
 
@@ -408,7 +408,7 @@ Let $$A_1, A_2,\dots, A_k$$ be $$n\times n$$ invertible matrices. Then the produ
 Given the matrix $$A = \begin{bmatrix}
 a & b \\
 c & d \\
-\end{bmatrix}$$ and the inverse of A, $$A^{-1}=C=\begin{bmatrix} d & -b \\ -c & a \\ \end{bmatrix}$$.
+\end{bmatrix}$$ and the inverse of A, $$A^{-1}=C=\frac{1}{ad-bc}\begin{bmatrix} d & -b \\ -c & a \\ \end{bmatrix}$$.
 
 Now if we multiply these two together we get $$AC = (ad-bc)\cdot\begin{bmatrix} 1 & 0 \\ 0 & 1 \\ \end{bmatrix}$$
 
@@ -416,7 +416,7 @@ Thus if $$(ad-bc)\neq 0$$ then we know that it is possible $$C=A^{-1}$$
 
 So then the matrix which is $$\frac{1}{ad-bc}\begin{bmatrix} d & -b \\ -c & a \\ \end{bmatrix} = A^{-1}$$
 
-So then if $$(ad-bc)\neq 0$$ we then know it is possible for matrix $$A$$ to have an inverse. The quanitity $$(ad-bc)$$ is called the **determinant**.
+So then if $$(ad-bc)\neq 0$$ we then know it is possible for matrix $$A$$ to have an inverse. The quantity $$(ad-bc)$$ is called the **determinant**.
 
 **So then what about an $$n\times n$$ matrix?**
 
@@ -502,7 +502,7 @@ So our determinant is $$-36$$
 
 **Wait wait wait, hold up! there's an extra $$-1$$ in the front of that product!**
 
-Correct! we had to change the sign of the value we found because in one of our elementary row operations, we switched the two rows, instead of just adding. When calculating the determinant you have to multiply the product of all the diagonal entried by $$(-1)^{\text{# of times rows switched}}$$
+Correct! we had to change the sign of the value we found because in one of our elementary row operations, we switched the two rows, instead of just adding. When calculating the determinant you have to multiply the product of all the diagonal entries by $$(-1)^{\text{# of times rows switched}}$$
 
 So in this case we multiplied the determinant by $$(-1)^1$$ which makes the determinant $$-36$$ which is the correct answer.
 
@@ -513,7 +513,7 @@ So in this case we multiplied the determinant by $$(-1)^1$$ which makes the dete
 
 Given two vectors $$v$$ and $$u$$ in $$\!R^2$$ which create a parallelogram, the area of the parallelogram is the absolute value of the determinant of $$[ u \ v ]$$
 
-So given a two vectors $$ u = [ 1, 2]^T$$ and $$v = [ -2, 3]$$ the area created by the parallelogram defined by these vectors is equal to 
+So given a two vectors $$ u = [ 1, -2]^T$$ and $$v = [ 2, 3]^T$$ the area created by the parallelogram defined by these vectors is equal to 
 
 $$ det(\begin{bmatrix} 1 & 2 \\ -2 & 3 \\ \end{bmatrix}) = (1(3) - (2)(-2)) = 7$$
 
@@ -575,7 +575,7 @@ Then we can say that
 **Definition**: A set of vectors in $$\!R^n$$ is called a **subspace** of $$\!R^n$$ if it has the following three properties
 
 1. The zero vector belongs to W
-2. Whenever any two vectors $$u$$ and $$v$$ beloing to W, then $$u + v$$ must also belong to W
+2. Whenever any two vectors $$u$$ and $$v$$ belong to W, then $$u + v$$ must also belong to W
 3. Whenever $$u$$ belongs to W and c is a scalar, then $$cu$$ belongs to W
 
 **Subspaces Associated with Matrices**
@@ -600,7 +600,7 @@ Then the $$Col(A) = Span\bigg\{ \begin{bmatrix} 1 \\ 2 \\ \end{bmatrix}, \begin{
 
 **Row Space**
 
-he **row space** of a matrix is defined to be the span of its rows. The row space of a matrix, A, is denoted by $$Row(A)$$ So then given the matrix 
+The **row space** of a matrix is defined to be the span of its rows. The row space of a matrix, A, is denoted by $$Row(A)$$ So then given the matrix 
 
  $$A = \begin{bmatrix} 1 & -5 & 3 \\ 2 & -9 & -6 \\ 1 & 2 & 3 \\ \end{bmatrix}$$
 
@@ -632,7 +632,7 @@ Another way to describe a basis is that it is a minimal set of generators for a 
 
 This section explores different representations of matrices which are **diagonalizable**. We first need to explore **eigenvalues** and **eigenvectors** before we can understand how to diagonalize a matrix.
 
-**Definition**: Let T be a linear operator on $$\!R^n$$. A nonzero vector, v, in $$\!R^n$$ is called an **eigenvector** of T is $$T(v)$$ is a multiple of $$v$$. That is, $$Tv = \lambda v$$ for some scalar $$\lambda$$. The scalar value $$\lambda$$ is valled the eigenvalue of $$T$$ which corresponds to $$v$$
+**Definition**: Let T be a linear operator on $$\!R^n$$. A nonzero vector, v, in $$\!R^n$$ is called an **eigenvector** of T is $$T(v)$$ is a multiple of $$v$$. That is, $$Tv = \lambda v$$ for some scalar $$\lambda$$. The scalar value $$\lambda$$ is called the eigenvalue of $$T$$ which corresponds to $$v$$
 
 In other words, v is an **eigenvector** if it satisfies the equation $$Av=\lambda v$$. Where $$\lambda$$ is a scalar value called an **eigenvalue** of the matrix $$A$$ which corresponds to $$v$$
 
@@ -665,7 +665,7 @@ We can find the eigenvalues for a given matrix by the following:
 
 From (4) we can find the eigenvectors of a matrix by simply solving that equation for any eigenvalue, $$\lambda$$, and all of the solutions from that equation will be the result of that solution
 
-**Finding the EigenValues of a Matrix**
+**Finding the Eigenvalues of a Matrix**
 
 So then how can we just find the eigenvalues of a matrix?
 
@@ -737,7 +737,7 @@ Because if $$A = PDP^{-1}$$
 
 Then $$A^{100} = (PDP^{-1})(PDP^{-1})(PDP^{-1})\dots = PD^{100}P^{-1}$$
 
-> **Definition**: An $$n\times n$$ matrix is diagonalizble if and only if there is a basis for $$\!R^n$$ consisting of eigenvectors of A. Furthurmore, $$A = PDP^{-1}$$ where $$D$$ is a diagonal matrix and P is an invertible matrix, if and only if the columns of P are a basis for $$\!R^n$$ consisting of eigenvectors of A and the diagonal entries of D are the eigenvalues of the respective columns of P
+> **Definition**: An $$n\times n$$ matrix is diagonalizable if and only if there is a basis for $$\!R^n$$ consisting of eigenvectors of A. Furthermore, $$A = PDP^{-1}$$ where $$D$$ is a diagonal matrix and P is an invertible matrix, if and only if the columns of P are a basis for $$\!R^n$$ consisting of eigenvectors of A and the diagonal entries of D are the eigenvalues of the respective columns of P
 
 **Theorem**, Every $$n\times n$$ matrix having $$n$$ distinct eigenvalues is diagonalizable
 
@@ -748,12 +748,105 @@ For an $$n\times n$$ matrix A:
 - There must be at least $$n$$ distinct **eigenvalues**
 - For each **eigenvalue**, $$\lambda$$ of A, the dimension of the corresponding eigenspace which is equal to $$n-rank(A-\lambda I_n)$$ is equal to the multiplicity of $$\lambda$$
 
+## Chapter 6 - Orthogonality
 
+The **norm** of a vector, $$v$$ is: 
 
+$$ \lVert v \rVert = \sqrt{v_1^2 + v_2^2 +\dots + v_n^2} $$
 
+A vector with a **norm** of 1 is called a **unit vector**
 
+The distance between two vectors is simply the norm of the difference of the two vectors.
 
+The distance between $$u$$ and $$v$$ is $$\lVert u - v \rVert $$
 
+We also define the **dot product** of any two n-length vectors to be:
+
+$$ u\cdot v = u_1v_1 + u_2v_2 + \dots + u_nv_n $$
+
+If the **dot product** is **zero**, then the vectors are said to be **orthogonal**
+
+You might have heard pythagorean theorem before, with respect to finding the sides of a triangle. Well, it turns out that the formula holds as well for any vectors of size $$n$$
+
+$$\lVert u + v \rVert^2 = \lVert u \rVert^2 + \lVert v \rVert^2 $$
+
+The **Cauchy-Schwarz Inequality**
+
+For any two vectors $$u$$ and $$v$$, it holds true that:
+
+$$\vert u\cdot v \vert \leq \lVert u \rVert \cdot \lVert v \rVert $$
+
+In other words, the absolute value of the dot product, must always be equal to or less than the norm of both vectors multiplied together.
+
+### Orthogonal Sets of Vectors
+
+Any set of non-zero vectors is always going to be **linearly independent**.
+
+**Gram-Schmidt Process** - Given a set of vectors $$\{u_1, u_2, \dots , u_k\}$$
+
+Then to define an orthogonal set $$\{v_1, v_2, \dots , v_n\}$$ based on these vectors:
+
+$$ v_1 = u_1 $$
+
+$$ v_2 = u_2 - \frac{u_2\cdot v_1}{\lVert v_1 \rVert^2}v_1 $$
+
+$$v_3 = u_3 - \frac{u_3\cdot v_1}{\lVert v_1 \rVert^2}v_1 - \frac{u_3\cdot v_2}{\lVert v_2 \rVert^2}v_2 $$
+
+$$\dots$$
+
+The general formula for the k-th vector is:
+
+$$ v_k = u_k - \frac{u_k\cdot v_1}{\lVert v_1 \rVert^2}v_1 - \frac{u_k\cdot v_2}{\lVert v_2 \rVert^2}v_2 - \dots - \frac{u_k\cdot v_k}{\lVert v_k \rVert^2}v_k $$
+
+### Orthogonal Complements
+
+An **orthogonal complement** of set of vectors is a vector, $$v$$ in which for all $$u$$ in a set, $$u\cdot v = 0$$
+
+In other words, it is solution to $$Ax = 0$$, or the **null space** of the matrix obtained from all concatenating the column vectors together.
+
+> $$ W^\perp = (\text{Row}(A))^\perp = \text{Null}(A) $$
+
+Similarly, if we were wanted the orthogonal basis for the transpose of the set of vectors, $$A^T$$ Then it is simply:
+
+> $$ (\text{Col}(A))^\perp = (\text{Row}(A)^T)^\perp = \text{Null}(A^T)$$
+
+It is simply the Null space of the transpose of the matrix.
+
+A quick note: **The dimension of a subsapce $$W$$ and its orthogonal complement $$W^\perp$$ sum to equal $$n$$**.
+
+### Orthogonal Projection Matrix
+
+An orthogonal projection matrix is denoted by $$P_W$$.
+
+$$P_W$$ is defined as:
+
+> $$ P_W = C(C^TC)^{-1}C^T $$
+
+$$C$$ a matrix with a set of columns whose span is the subspace $$W$$
+
+Using $$P_W$$ you can also get the orthogonal projection $$w$$ of any vector $$v$$ onto the subspace $$W$$ by simple using the formula:
+
+$$ w = P_W u $$
+
+### Least squares Regression Line
+
+Given $$n$$ data points and variables, $$x$$, and $$y$$, we can find the coefficients for the least-squared regression line by the formula:
+
+> $$ \begin{bmatrix} a_0 \\ a_1 \\ a_2 \\ \end{bmatrix} = (C^TC)^{-1}C^Ty \text{ or } \begin{bmatrix} a_0 \\ a_1 \\ \end{bmatrix} = (C^TC)^{-1}C^Ty$$
+
+Where the matrix $$C = [v_1\ v_2\ v_3]$$ for quadratic lines and $$C = [v_1\ v_2]$$ for linear lines.
+
+The $$v$$ vectors are:
+
+$$v_1 = [1\ 1\ \dots 1]^T $$
+
+$$v_2 = [x_1\ x_2\ \dots x_n]^T $$
+
+$$v_3 = [x_1^2\ x_2^2\ \dots x_n^2]^T $$
+
+- $$a_0$$ always represents a constant
+- $$a_1$$ is the $$x$$ coefficient
+- $$a_2$$ is the $$x^2$$ coefficient
 
 
 

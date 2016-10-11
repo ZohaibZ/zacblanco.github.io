@@ -7,6 +7,7 @@ mathjax: true
 author: Zac Blanco
 ---
 
+
 These are notes for the version of the class which is being taught by professor Naghmeh Karimi in the Spring of 2016.
 
 - Textbook: D.A. Patterson and J.L. Hennessy, Computer Organization and Design: The Hardware/Software Interface - 5th edition
@@ -940,7 +941,7 @@ We can first define a binary number **A**. Fill the leftmost bits of **A** with 
 
 Next, we should define the binary number **S** which is of size $$x + y + 1$$. You should fill in leftmost, $$x$$ number of bits with the value of $$-m$$. In other words: invert the value of $$m$$ and then put that binary representation into the leftmost bits of $$S$$. The rest should be zeroes
 
-Last, we should define the number **P*. **P** is of size $$x + y + 1$$ as well. However, we want to fill the most significant (leftmost) $$x$$ bits with zeroes. That is The leftmost bits of **P** should all be zero. The next $$y$$ bits should be the value of $$n$$. The rightmost bit should be a zero.
+Last, we should define the number **P**. **P** is of size $$x + y + 1$$ as well. However, we want to fill the most significant (leftmost) $$x$$ bits with zeroes. That is The leftmost bits of **P** should all be zero. The next $$y$$ bits should be the value of $$n$$. The rightmost bit should be a zero.
 
 Example:
 
@@ -1006,7 +1007,7 @@ An IEEE-754 number has the following format
 
 As we can see if we add the bits for each space together we get $$1 + 8 + 23 = 32$$ bits to represent a floating point number.
 
-Okay, but how exactly do each of these sets of bits help to represent the **Sign**, **Fraction**, and **Exponent**?.
+Okay, but how exactly do each of these sets of bits help to represent the **Sign**, **Fraction**, and **Exponent**?
 
 ------
 
@@ -1022,7 +1023,7 @@ On the other hand if the **sign bit is 1** then we get $$(-1)^1 = -1$$ meaning t
 
 The exponent is interesting. It allows us to represent very, very small numbers as well as large ones using only 8 binary digits.
 
-The exponent values of $$ 1111\ 1111$$ and $$ 0000\ 0000$$ are both reserved for special cases such as Zero, $$\infty$$, $$NaN$$, etc... They are not used to represent normal numbers.
+The exponent values of $$ 1111\ 1111$$ and $$ 0000\ 0000$$ are both reserved for special cases such as Zero, $$\infty$$, $$NaN$$, etc... They are not used to represent normal numbers. The number we subtract from the exponent (127) is called the **bias**
 
 Because the exponent is made up of 8 bits that means we can express a maximum of $$2^8 = 256 $$ numbers (0 through 255). Judging from the formula this means that we can represent everywhere from $$2^{-126}$$ (because 0 is reserved, 1-127=-126) to $$ 2^{127} $$ (254 - 127=126, because 255 is reserved).
 
@@ -1039,7 +1040,7 @@ Below is a table which outlines the values for the fraction
 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8| 9 | 10 | 11 | etc.. | 
 | $$2^{-1}$$ | $$2^{-2}$$ | $$2^{-3}$$ | $$2^{-4}$$ | $$2^{-5}$$ | $$2^{-6}$$ | $$2^{-7}$$ | $$2^{-8}$$ | $$2^{-9}$$ | $$2^{-10}$$ | $$2^{-11}$$ | etc... |
 
-Remember that the leftmost fraction bit represents the $$2^{-1}$$ place, where the rightmost represents the $$2^{-23} space$$
+Remember that the leftmost fraction bit represents the $$2^{-1}$$ place, where the rightmost represents the $$2^{-23}$$ place
 
 So if we were given a 23 bit number to represent a fraction, say: 
 
@@ -1051,22 +1052,286 @@ $$ 1\cdot 2^{-1} + 1\cdot 2^{-2} + 0\cdot 2^{-3} + 0\cdot 2^{-4} + \dots = 0.75$
 
 ------
 
-So in quick summary, The formula to represent a floating point number with **IEEE-754** standard is $$ (-1)^{\text{Sign}} \cdot (1 + \text{Fraction}) \cdot 2^{\text{Exponent} - 127} $$
+**Summary**
 
-The **fraction** is a sum of negative powers of two, while the **exponent** field helps represent a power of 2 between $$-126$$ and $$+127$$. The sign bit simply tells us whether or not 
+So in quick summary, The formula to represent a floating point number with **IEEE-754** standard is:
+
+$$ (-1)^{\text{Sign}} \cdot (1 + \text{Fraction}) \cdot 2^{\text{Exponent} - 127} $$
+
+The **fraction** is a sum of negative powers of two, while the **exponent** field helps represent a power of 2 between $$-126$$ and $$+127$$. The sign bit simply tells us whether or not the value is positive or negative.
 
 ### Dealing with Arithmetic Overflow
 
 Some languages (e.g. C) ignore overflow errors.
 
-Some other languages (Ada, or Fortran) will raise an exception
+Some other languages (Ada, or Fortran) will raise an exception.
 
-## MIPS Datapath
+MIPS handles overflow by attempting to raise an exception. MIPS needs special bits of code called exception handlers to do this.
+
+Using a full single-bit adder we can determine whether there is overflow by looking at the most significant adder (leftmost bit in MIPS).
+
+We must XOR the carry-in and carry-out signals. The result of the XOR will tell us whether there was overflow (1 = true, 0 = false).
+
+| Carry-In | Carry-Out | (Carry-In) XOR (Carry-Out) | Overflow |
+| 1 | 1 | 0 | No |
+| 1 | 0 | 1 | Yes |
+| 0 | 1 | 1 | Yes |
+| 0 | 0 | 0 | No |
+
+## The Processor
+
+A processor's clock determines when we can read and write signals. Typically a clock signal will look something like the following: 
+
+![](/assets/images/comp-arch/clock-signal.png)
+
+We can see from the image how cycle time is defined. If we wanted the clock rate (frequency) of the clock, then we simply divide 1 by the clock cycle time: $$\text{Frequency} = \frac{1}{\text{Cycle Time}} $$
+
+Elements will perform functions on each rising and falling edge of the clock. Performing operations on each rising and falling edge helps the processor perform more operations in a smaller amount of time.
+
+### The Datapath
+
+#### Instruction Fetch and The PC Register
+
+To execute instructions in a program there are a few different stages. The first is the **IF** or **Instruction Fetch** Stage. This stage retrieves the instructions from the instruction memory.
+
+To retrieve instructions from certain locations in memory we use a register called the **PC** or, Program Counter. This register always holds the byte-address location of the next instruction to be executed.
+
+After one instruction is executed, the PC is immediately incremented by 4, and then passed back for the next instruction (as long as there is no jump or branch statements).
+
+#### Instruction Decoding
+
+After the instruction is fetched from the instruction memory, it goes onto the next stage of the datapath which is **ID** or **Instruction Decode**. The decode stage helps to split up the instruction's data so that we can read the registers data and certain values are passed to the control unit.
+
+Different intstructions are formatted differently, so we should know the Different formats.
+
+For **R-Type** instructions, the format is the following
+
+| Bits | 31-26 | 25-21 | 20-16 | 15-11 | 10 - 6 | 5-0 |
+| Description | op | rs | rt | rd |shamt | funct | 
+
+Load/Store/Branch operations
+
+| Bits | 31-26 | 25-21 | 20-16 | 15-0 |
+| Description | op | rs | rt | address offset | 
+
+* The difference between the load/store and branch operations is that the address offset of a load/store is for a location in memory, while for the branch instruction it is an instruction memory location.
+
+There's actually something special going on when executing a branch statement. The new PC value is updated a bit differently than you might think.
+
+Given an unconditional jump instruction, there are 26 bits for the new PC address. To calculate this new PC value, we:
+
+1. Sign extend the address to 32 bits.
+2. Shift this value left two bits (putting $$00$$ in rightmost place)
+3. Concatenate this value to the 4 leftmost bits of the current PC.
+
+This will result in the new PC for the next instruction. However, note that we're only able to have a maximum jump of $$2^26$$
+
+### Full MIPS datapath
+
+![MIPS Datapath](/assets/images/comp-arch/mips-datapath-slides.png)
+
+Note the blue lines which go into some of the multiplexers and ALU in this datapath. They specify which data should be selected along certain portions of the datapath
+
+It's important to note though that no two instructions could "live" inside this datapath at once. We wouldn't be able to immediately fetch and decode an R-Type instruction after a load/store instruction is fetched/decoded executed, etc.. We would need to wait until the entire load store finished and data was written back into memory (or loaded into a register) before the next instruction could execute.
+
+This is actually very inefficient because this means parts of the datapath end up being unused during the entire process of running an instruction.
+
+Now let's take a look at the different control lines.
+
+There are actually 8 different control lines. They are:
+
+- RegDst
+  - Tells whether or not the destination register resides in bits 20:16 (control value 0) or bits 15:11 (control value 1).
+- Branch
+  - Tlles us whether or not an instruction is a branch instruction. AND'd with the zero flag from the ALU
+- MemRead
+  - Tells us whether we need to read from memory or not for the instruction. 1 = true, 0 = false.
+- MemtoReg
+  - Are we moving a piece of data from the memory into a register? 1 = true, 0 = false
+- ALUOp
+  - ALUOp is a 2  bit control which comes from the main control unit.  Load/store instructions result in 00. Branch equal instructions have an Opcode of 01. R-types have a code of 10. This code is passed into the ALU control input which uses the Funct field form R type instructions. More on this later.
+- MemWrite
+  - Do we need to write to memory? 1 = true, 0 = false
+- ALUSrc
+  - Does the 2nd operand come from an immediate value? Or is it a register value? 1 - immediate, 0 = register.
+- RegWrite
+  - Do we write to a register with this instruction? 1 = true, 0 = false
+
+Below is a quick table for the instruction bit layout
+
+R-Type
+
+| 31-26 | 25-21 | 20-16 | 15-11 | 10 - 6 | 5-0 |
+| op | rs | rt | rd |shamt | funct | 
+
+I-Type
+
+| 31-26 | 25-21 | 20-16 | 15-0 |
+| op | rs | rt | address offset | 
+
+Some observations about these two formats:
+
+- Op field is always bits 26-31
+- The registers we always read from are specified by `rs` and `rt` which are in bits 16-20 and 21-25.
+- The address of the register to be written is in **two** places. Bits place `rt` from bits 16-20 in lw instructions and then`rd` in bits 11-15 for R-type instructions
+  - This explains the RegDst instruction which tells us whether we read from 11-15 or 16-20
+
+**ALU Control Lines**
+
+In order to send the right codes to the ALU for the ALU operation the ALU Control must utilize `funct` bits from the r-type instructions. 
+
+The logic for the ALU control is as follows:
+
+1. If the ALUOp is 00 (load/store word), then the ALU function is ADD, and the ALU control is the ALUOp + `10` $$\rightarrow 0010$$
+2. If the ALUOp is $$01$$ then it is a branch equal intruction. The operation should be _subtract_. The ALU Control is the ALUOp concatenated with $$10\ \rightarrow 0110$$
+3. If the ALUOp is $$10$$ then we need to look at the `funct` field from the 0-5 bits of the instruction.
+  - The following table shows the `funct` fields for typical R-Type instructions
+  - | Operation | `funct` |
+  	| Add | $$ 100000 $$  |
+	| Subtract | $$ 100010 $$  |
+	| AND | $$ 100100 $$  |
+	| OR | $$ 100101 $$  |
+	| Set on Less Than | $$ 101010 $$  |
+  - Given each of the `funct` fields the ALU Control derives the following table of inputs for the ALU
+   - | Operation | `funct` | ALU Control Lines | 
+  	| Add | $$ 100000 $$  | $$ 0010 $$ |
+	| Subtract | $$ 100010 $$  | $$ 0110 $$ |
+	| AND | $$ 100100 $$  | $$ 0000 $$ |
+	| OR | $$ 100101 $$  | $$ 0001 $$ |
+	| Set on Less Than | $$ 101010 $$  | $$ 0111 $$ |
+
+### Pipelining with MIPS
+
+The best way to increase performance is with pipelining. It allows multiply instructions to use the datapath at a single time and increases the instruction throughput.
+
+I'm not going to go over all the modifications, but a datapath which supports pipelining is displayed below:
+
+![MIPS Datapath](/assets/images/comp-arch/pipelined-processor.png)
+
+However with Pipelining this introduces something called **hazards**. Hazards are errors that can possibly occur if we don't take into account the effects of pipelining.
+
+Example: We load from memory into register R7. We then want to add 5 to R7. In the pipeline, R7 will be loaded at the same time we are adding to R7. But this means we would be adding to the wrong R7 value, so we need to add a **stall** into the pipeline.
+
+**Stalls** basically do what they sound like. They stop everything in the pipeline (for one cycle) in order to let the previous operation complete one more stage in order to update for the next instruciton.
+
+However, we can improve performance even more by introducing instruction forwarding. This reduces the amount of stalls necessary in the processor which makes the datapath even more efficient. We need something called a **forwarding unit** in order to do this. It sends the data back from certain instructions into the earlier stages to be used with newer instructions.
+
+![MIPS Datapath](/assets/images/comp-arch/forwarding-datapath.png)
+
+## Memory Heierarchy and the Cache
+
+So typically trying to retrieve data from the memory takes a long amount of time (Hundreds upon Hundreds of clock cycles). If we directly accessed the memory every time we wanted to load a value from the RAM it would cause programs to take a significantly longer amount of time to execute.
+
+So then how do we avoid accessing the memory every single time we execute a `lw` instruction? We use the **cache**!
+
+The **cache** is an intermediary between the main memory and the registers of the processor. Accessing data from the cache is much, much faster than main memory and help our programs run much quicker.
+
+The downside is that faster cache memory is much more expensive than typical DRAM. This is why on even modern processors there are extremely small amounts (compared to DRAM and Hard disk sizes).
+
+**Storing Data in the Cache**
+
+Because the cache is basically just a much faster, smaller version of main memory, we have to find a method which allows us to map and store different addresses from main memory into the cache.
+
+In this course we will study three main ways of mapping cache locations to main memory.
+
+- Direct Mapping
+- Set Associativity
+- Full Associativity
+
+A directly mapped cache simply uses the modulus operator on the number of blocks in memory, and then maps it to the cache.
+
+Direct Mapping Example:
+
+- Our memory has up to 10,000 byte locations. Our cache holds 20 blocks (numbered 0-19), storing 1 byte of data in each.
+  - To directly map a block we simply mod the block address with the number of cache blocks.
+  - i.e. we want to store memeory block 5454 into the cache, it goes into ($$5454 \% 20 = 14$$) cache block 14.
+
+So we also need to devise a way to tell us whether or not the data in the cache is the data we're looking for, or if the data in the block is even valid.
+
+We accomplish this using **tag** and **valid** bits.
+
+The **valid bit** tells us whether or not data is event present in the current cache block. 1 = data present, 0 = data not present.
+
+The tag bits are then a set of bits which help identify the the memory location for which the data corresponds to. However, we want to use as few bits as possible to do this. So, the _tag_ for each is actually only composed of the first $$n$$ bits of the memory address where
+  - $$n = \text{bits to address of main memory} - \text{bits to address cache blocks} \\ - \text{bits to address every byte in block} $$
+
+We call the data size for each row of the cache the **block size** or the size of the data each block of cache is able to hold.
+
+This **does not** account for the valid or tag bits though.
+
+We should also define **hit**, **miss**, **hit rate**, **miss rate**, and **miss penalty**
+
+- **Hit**: A _hit_ occurs when the data we are searching for appears in some part of the cache.
+- **Miss**: The opposite of a _hit_. When we are searching for data, but it doesn't appear in the cache so we must retrieve the data from main memory.
+- **Hit Rate**: The number of times we get a _hit_ divided by the total number of times we attempt to get data from the cache.
+- **Miss Rate**: The number of times we get a _miss_ divided by the total number of times we attempt to get data from the cache.
+- **Hit Time**: The time it takes to determine if the the search for data is a hit or miss + the time it takes to access the cache data.
+- **Miss Penalty**: The time it takes to retrieve from a lower level memory to access a certain piece of data and deliver it to the processor.
+
+Another thing to note is that:
+
+- $$\text{Hit Rate} = 1 - \text{Miss Rate} $$
+
+We can measure cache performance a few different ways:
+
+$$\frac{\text{Memory Accesses}}{\text{Program}} \times \text{Miss Rate} \times\text{Miss Penalty}$$
+
+$$\frac{\text{Instructions}}{\text{Program}} \times \frac{\text{Misses}}{\text{Instruction}} \times\text{Miss Penalty}$$
+
+There is another metric that is useful to calculate with the cache which is called AMAT, or, **A**verage **M**emory **A**ccess **T**ime.
+
+The formula for AMAT is:
+
+> $$ \text{AMAT} = \text{Hit Time} + \text{Miss Rate}\times\text{Miss Penalty} $$
+
+So on cache misses and hits we also must devise a strategy to determine how and when we update and interact with the cache and main memory.
+
+Strategies on **Cache Hits**:
+
+  - _Write through_: Writes to both the cache and memory
+  - _Write Back_: Write cache only, memory is updated only when the cache entry is removed
+
+Strategies on **Cache Misses**:
+
+  - _No Write Allocate_: Only write to the main memory
+  - _Write Allocate_: Fetch into cache
+  
+The most common combinations are:
+
+  - Write through and no write allocate
+  - Write back with write allocate.
+  
+### Virtual Memory
+
+Virtual Memory is a concept very similar to the cache, except that typical DRAM is far too small to hold the information necessary to quickly fetch information for many of the programs. Each process running on an operating system will get assigned a range of DRAM addresses to use.
+
+- In other words, main memory (DRAM) acts as a cache for the secondary storage (Hard disk).
+- This portion is typically managed by the CPU hardware and the Operating System
+- Each program gets a space in the DRAM to store its data. It is protected from modification by any other programs.
+
+- A virtual memory block is called a **page**
+- A virtual memory translation _miss_ is called a **page fault**
+
+When a **page fault** occurs it is millions of clock cycles as a penalty. Typically treated as an exception in the software mechanisms.
+
+The software can help reduce page faults by cleverly deciding which pages to erase or replace in the DRAM.
+
+A **write-back** mechanism ensures that pages which were altered in RAM are saved to the disk before being discarded. A write-through mechanism is just not practical and takes far too long.
+
+The translation mechanism is provided by what we call a **page table**. 
+
+- Each program has it's own **page table** which contains the physical addresses of the pages and is indexed by the virtual page number.
+- Because each program/process has its own page table, _programs can have the same virtual address space_
+
+
+## Reference
+
+### MIPS Datapath
 
 ![MIPS Datapath](/assets/images/comp-arch/mips-datapath.png)
 
 
-## Datapath and Control Line Signals
+### Datapath and Control Line Signals
 
 ![ALU Control lines](/assets/images/comp-arch/alu-control-lines.png)
 
@@ -1084,9 +1349,10 @@ Some other languages (Ada, or Fortran) will raise an exception
 | 10 | Determined by funct field (R-type instruction) |
 | 11 | Not used |
 
-## Pipelined MIPS Datapath
+### Pipelined MIPS Datapath
 
 ![MIPS Datapath](/assets/images/comp-arch/pipelined-processor.png)
+
 
 
 

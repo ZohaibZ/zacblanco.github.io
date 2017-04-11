@@ -5,13 +5,15 @@ keywords: rutgers, university, course, notes, electrical, engineering, physics, 
 permalink: /education/
 ---
 
-Occasionally I'll create study guides or take notes on my computer. I like to post these online so others can use them too!
+-----
 
-I highly encourage contributions to this part of the site! Everything is written and [markdown](http://blanco.io/blog/markup-languages/markdown-is-awesome/) and [MathJax](https://www.mathjax.org/) is used for math formatting.
+**Spring 2017 Data Structures (CS112) Study Group**
 
-To start contributing, you'll need to [make a fork](https://help.github.com/articles/fork-a-repo/) of [this site](https://github.com/ZacBlanco/zacblanco.github.io) using GitHub and then once you've made changes, [create a pull request](https://help.github.com/articles/creating-a-pull-request/).
+For the students in my 112 study group you can [find our group page here](/education/data-structures/study-group/)
 
-The courses below are organized by the order in which I took them at Rutgers University. Under each link you should be able to find useful resources for each class and at least one set of notes.
+-----
+
+At each link you should be able to find useful resources for each class and at least one set of notes.  I do my best to take notes during class. I am also very welcoming to contributions. Everything is written in [markdown](http://blanco.io/blog/markup-languages/markdown-is-awesome/). [MathJax](https://www.mathjax.org/) is used for math formatting.
 
 ## Courses at Rutgers University
 
@@ -39,5 +41,10 @@ The courses below are organized by the order in which I took them at Rutgers Uni
 - Fall
   - [(14:332:231) - Digital Logic Design](digital-logic-design/)
   - [(14:332:345) - Linear Systems and Signals](linear-systems-signals/)
-  - (14:332:361) - Electronic Devices
-  - (01:198:214) - Systems Programming
+  - (14:332:361) - Electronic Devices (Coming Soon)
+  - (01:198:214) - Systems Programming (Coming Soon)
+- Spring
+  - [(14:332:452) - Software Engineering](software-engineering/)
+  - [(14:332:434) - Intro to Computer Systems](computer-systems/)
+  - [(01:198:344) - Design and Analysis of Computer Algorithms](algo/)
+  - (14:332:xxx) - Digital Electronics (Coming soon)
